@@ -1,0 +1,129 @@
+package com.azure.ai.formrecognizer.models;
+
+import com.azure.core.annotation.Fluent;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
+
+/**
+ * The TrainingDocumentInfo model.
+ */
+@Fluent
+public final class TrainingDocumentInfo {
+    /*
+     * Training document name.
+     */
+    @JsonProperty(value = "documentName", required = true)
+    private String documentName;
+
+    /*
+     * Total number of pages trained.
+     */
+    @JsonProperty(value = "pages", required = true)
+    private int pages;
+
+    /*
+     * List of errors.
+     */
+    @JsonProperty(value = "errors", required = true)
+    private List<ErrorInformation> errors;
+
+    /*
+     * Status of the training operation.
+     */
+    @JsonProperty(value = "status", required = true)
+    private TrainStatus status;
+
+    /**
+     * Get the documentName property: Training document name.
+     * 
+     * @return the documentName value.
+     */
+    public String getDocumentName() {
+        return this.documentName;
+    }
+
+    /**
+     * Set the documentName property: Training document name.
+     * 
+     * @param documentName the documentName value to set.
+     * @return the TrainingDocumentInfo object itself.
+     */
+    public TrainingDocumentInfo setDocumentName(String documentName) {
+        this.documentName = documentName;
+        return this;
+    }
+
+    /**
+     * Get the pages property: Total number of pages trained.
+     * 
+     * @return the pages value.
+     */
+    public int getPages() {
+        return this.pages;
+    }
+
+    /**
+     * Set the pages property: Total number of pages trained.
+     * 
+     * @param pages the pages value to set.
+     * @return the TrainingDocumentInfo object itself.
+     */
+    public TrainingDocumentInfo setPages(int pages) {
+        this.pages = pages;
+        return this;
+    }
+
+    /**
+     * Get the errors property: List of errors.
+     * 
+     * @return the errors value.
+     */
+    public List<ErrorInformation> getErrors() {
+        return this.errors;
+    }
+
+    /**
+     * Set the errors property: List of errors.
+     * 
+     * @param errors the errors value to set.
+     * @return the TrainingDocumentInfo object itself.
+     */
+    public TrainingDocumentInfo setErrors(List<ErrorInformation> errors) {
+        this.errors = errors;
+        return this;
+    }
+
+    /**
+     * Get the status property: Status of the training operation.
+     * 
+     * @return the status value.
+     */
+    public TrainStatus getStatus() {
+        return this.status;
+    }
+
+    /**
+     * Set the status property: Status of the training operation.
+     * 
+     * @param status the status value to set.
+     * @return the TrainingDocumentInfo object itself.
+     */
+    public TrainingDocumentInfo setStatus(TrainStatus status) {
+        this.status = status;
+        return this;
+    }
+
+    public void validate() {
+        if (getDocumentName() == null) {
+            throw new IllegalArgumentException("Missing required property documentName in model TrainingDocumentInfo");
+        }
+        if (getErrors() == null) {
+            throw new IllegalArgumentException("Missing required property errors in model TrainingDocumentInfo");
+        } else {
+            getErrors().forEach(e -> e.validate());
+        }
+        if (getStatus() == null) {
+            throw new IllegalArgumentException("Missing required property status in model TrainingDocumentInfo");
+        }
+    }
+}

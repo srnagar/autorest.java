@@ -165,8 +165,16 @@ public class ClientMapper implements IMapper<CodeModel, Client> {
                 if (param.getSchema() instanceof ArraySchema) {
                     ArraySchema arraySchema = (ArraySchema) param.getSchema();
                     ListType listType = (ListType) Mappers.getSchemaMapper().map(arraySchema);
-                    String xmlRootElementName = arraySchema.getSerialization().getXml().getName();
-                    String xmlListElementName = arraySchema.getElementType().getSerialization().getXml().getName();
+                    String xmlRootElementNameTemp = null;
+                    if (arraySchema.getSerialization().getXml() != null) {
+                        xmlRootElementNameTemp = arraySchema.getSerialization().getXml().getName();
+                    }
+                    String xmlListElementNameTemp = null;
+                    if (arraySchema.getElementType().getSerialization().getXml() != null) {
+                        xmlListElementNameTemp = arraySchema.getElementType().getSerialization().getXml().getName();
+                    }
+                    String xmlRootElementName = xmlRootElementNameTemp;
+                    String xmlListElementName = xmlListElementNameTemp;
                     if (xmlSequenceWrappers.stream().noneMatch(
                         xmlSequenceWrapper -> xmlSequenceWrapper.getXmlListElementName().equals(xmlListElementName)
                             && xmlSequenceWrapper.getXmlRootElementName().equals(xmlRootElementName))) {

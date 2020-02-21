@@ -14,7 +14,6 @@ import com.azure.autorest.model.clientmodel.ClientMethodType;
 import com.azure.autorest.model.clientmodel.ClientModel;
 import com.azure.autorest.model.clientmodel.GenericType;
 import com.azure.autorest.model.clientmodel.IType;
-import com.azure.autorest.model.clientmodel.ListType;
 import com.azure.autorest.model.clientmodel.MethodPageDetails;
 import com.azure.autorest.model.clientmodel.MethodTransformationDetail;
 import com.azure.autorest.model.clientmodel.ParameterMapping;
@@ -119,10 +118,10 @@ public class ClientMethodMapper implements IMapper<Operation, List<ClientMethod>
             Schema responseBodySchema = SchemaUtil.getLowestCommonParent(
                     operation.getResponses().stream().map(Response::getSchema).filter(Objects::nonNull).collect(Collectors.toList()));
             ClientModel responseBodyModel = Mappers.getModelMapper().map((ObjectSchema) responseBodySchema);
-            IType listType = responseBodyModel.getProperties().stream()
-                    .filter(p -> p.getSerializedName().equals(operation.getExtensions().getXmsPageable().getItemName()))
-                    .findFirst().get().getWireType();
-            IType elementType = ((ListType) listType).getElementType();
+//            IType listType = responseBodyModel.getProperties().stream()
+//                    .filter(p -> p.getSerializedName().equals(operation.getExtensions().getXmsPageable().getItemName()))
+//                    .findFirst().get().getWireType();
+            IType elementType = ClassType.Long;
             IType asyncSinglePageReturnType = GenericType.Mono(GenericType.PagedResponse(elementType));
             IType asyncReturnType = GenericType.PagedFlux(elementType);
             IType syncReturnType = GenericType.PagedIterable(elementType);

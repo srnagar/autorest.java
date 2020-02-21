@@ -2,7 +2,7 @@
 
 ``` yaml
 use-extension:
-  "@autorest/modelerfour": "4.6.200"
+  "@autorest/modelerfour": "4.6.199"
 
 pipeline:
 
@@ -13,7 +13,7 @@ pipeline:
     output-artifact: java-files
   
   javagen:
-    scope: basic
+    scope: java
     input: preprocessor
     output-artifact: java-files
   
