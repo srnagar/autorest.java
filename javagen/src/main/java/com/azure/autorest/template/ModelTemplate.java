@@ -301,16 +301,18 @@ public class ModelTemplate implements IJavaTemplate<ClientModel, JavaFile> {
             });
 
             String requiredCtorArgs = requiredProperties.stream()
-                .map(property -> String.format("@JsonProperty(%1$s )%2$s %3$s", property.getAnnotationArguments(),
-                    property.getClientType().toString(), property.getName())).collect(Collectors.joining(", "));
+                .map(property -> String.format("@JsonProperty(%1$s )%2$s %3$s", String.format("value = \"%s\"",
+                    property.getXmlName()), property.getClientType().toString(), property.getName()))
+                .collect(Collectors.joining(", "));
 
             String requiredParentCtorArgs = "";
 
             if (!requiredParentProperties.isEmpty()) {
                 Collections.reverse(requiredParentProperties);
                 requiredParentCtorArgs = requiredParentProperties.stream().map(property -> String.format(
-                    "@JsonProperty(%1$s )%2$s %3$s", property.getAnnotationArguments(),
-                    property.getClientType().toString(), property.getName())).collect(Collectors.joining(", "));
+                    "@JsonProperty(%1$s )%2$s %3$s", String.format("value = \"%s\"",
+                        property.getXmlName()), property.getClientType().toString(), property.getName()))
+                    .collect(Collectors.joining(", "));
             }
 
             StringBuilder ctorArgs = new StringBuilder();
