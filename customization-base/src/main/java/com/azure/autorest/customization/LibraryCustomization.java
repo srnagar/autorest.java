@@ -2,6 +2,7 @@ package com.azure.autorest.customization;
 
 import com.azure.autorest.customization.implementation.ls.EclipseLanguageClient;
 import com.azure.autorest.customization.implementation.ls.models.SymbolInformation;
+import org.slf4j.Logger;
 
 import java.util.Optional;
 
@@ -9,12 +10,14 @@ import java.util.Optional;
  * The top level customization for an AutoRest generated client library.
  */
 public final class LibraryCustomization {
+    private final Logger logger;
     private EclipseLanguageClient languageClient;
     private Editor editor;
 
-    LibraryCustomization(Editor editor, EclipseLanguageClient languageClient) {
+    LibraryCustomization(Editor editor, EclipseLanguageClient languageClient, Logger logger) {
         this.editor = editor;
         this.languageClient = languageClient;
+        this.logger = logger;
     }
 
     /**
@@ -24,7 +27,7 @@ public final class LibraryCustomization {
      * @return the package level customization.
      */
     public PackageCustomization getPackage(String packageName) {
-        return new PackageCustomization(editor, languageClient, packageName);
+        return new PackageCustomization(editor, languageClient, packageName, logger);
     }
 
     /**
@@ -42,7 +45,7 @@ public final class LibraryCustomization {
         if (!classSymbol.isPresent()) {
             throw new IllegalArgumentException(className + " does not exist in package " + packageName);
         }
-        return new ClassCustomization(editor, languageClient, packageName, className, classSymbol.get());
+        return new ClassCustomization(editor, languageClient, packageName, className, classSymbol.get(), logger);
     }
 
     /**

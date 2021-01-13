@@ -1,16 +1,9 @@
 package com.azure.autorest.customization;
 
 import com.azure.autorest.customization.implementation.ls.EclipseLanguageClient;
-import com.azure.autorest.customization.implementation.ls.models.FileChangeType;
-import com.azure.autorest.customization.implementation.ls.models.FileEvent;
 import com.azure.autorest.customization.implementation.ls.models.SymbolInformation;
-import com.azure.autorest.customization.implementation.ls.models.TextEdit;
-import com.azure.autorest.customization.implementation.ls.models.WorkspaceEdit;
+import org.slf4j.Logger;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -20,11 +13,13 @@ public final class PackageCustomization {
     private final EclipseLanguageClient languageClient;
     private final Editor editor;
     private final String packageName;
+    private final Logger logger;
 
-    PackageCustomization(Editor editor, EclipseLanguageClient languageClient, String packageName) {
+    PackageCustomization(Editor editor, EclipseLanguageClient languageClient, String packageName, Logger logger) {
         this.editor = editor;
         this.languageClient = languageClient;
         this.packageName = packageName;
+        this.logger = logger;
     }
 
     /**
@@ -41,6 +36,6 @@ public final class PackageCustomization {
         if (!classSymbol.isPresent()) {
             throw new IllegalArgumentException(className + " does not exist in package " + packageName);
         }
-        return new ClassCustomization(editor, languageClient, packageName, className, classSymbol.get());
+        return new ClassCustomization(editor, languageClient, packageName, className, classSymbol.get(), logger);
     }
 }

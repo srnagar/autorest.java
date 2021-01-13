@@ -2,6 +2,7 @@ package com.azure.autorest.customization;
 
 import com.azure.autorest.customization.implementation.Utils;
 import com.azure.autorest.customization.implementation.ls.EclipseLanguageClient;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,16 +19,17 @@ public abstract class Customization {
     /**
      * Start the customization process. This is called by the post processor in AutoRest.
      * @param files the list of files generated in the previous steps in AutoRest
+     * @param logger
      * @return the list of files after customization
      */
-    public Map<String, String> run(Map<String, String> files) {
+    public Map<String, String> run(Map<String, String> files, Logger logger) {
         Path tempDirWithPrefix;
 
         // Populate editor
         Editor editor;
         try {
             tempDirWithPrefix = Files.createTempDirectory("temp");
-            editor = new Editor(files, tempDirWithPrefix);
+            editor = new Editor(files, tempDirWithPrefix, logger);
             InputStream pomStream = Customization.class.getResourceAsStream("/pom.xml");
             byte[] buffer = new byte[pomStream.available()];
             pomStream.read(buffer);
@@ -41,7 +43,7 @@ public abstract class Customization {
         try {
             languageClient = new EclipseLanguageClient(tempDirWithPrefix.toString());
             languageClient.initialize();
-            customize(new LibraryCustomization(editor, languageClient));
+            customize(new LibraryCustomization(editor, languageClient, logger));
             editor.removeFile("pom.xml");
             return editor.getContents();
         } catch (Exception e) {

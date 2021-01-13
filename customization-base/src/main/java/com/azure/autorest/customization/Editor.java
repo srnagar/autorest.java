@@ -2,6 +2,7 @@ package com.azure.autorest.customization;
 
 import com.azure.autorest.customization.models.Position;
 import com.azure.autorest.customization.models.Range;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,6 +23,7 @@ import java.util.Scanner;
  * The raw editor containing the current files being customized.
  */
 public final class Editor {
+    private final Logger logger;
     private Path rootDir;
     private Map<String, String> contents;
     private Map<String, List<String>> lines;
@@ -31,12 +33,14 @@ public final class Editor {
      * Creates an editor instance with the file contents and the root directory path.
      * @param contents the map from file relative paths (starting with "src/main/java") and file contents
      * @param rootDir the root directory path containing the files
+     * @param logger
      */
-    public Editor(Map<String, String> contents, Path rootDir) {
+    public Editor(Map<String, String> contents, Path rootDir, Logger logger) {
         this.contents = contents;
         this.lines = new HashMap<>();
         this.paths = new HashMap<>();
         this.rootDir = rootDir;
+        this.logger = logger;
         for (Map.Entry<String, String> content : contents.entrySet()) {
             addFile(content.getKey(), content.getValue());
         }
@@ -66,7 +70,7 @@ public final class Editor {
         }
         boolean fileCreated;
         try {
-            fileCreated = newFile.createNewFile();
+            fileCreated = newFile.createNewFile() || newFile.exists();
             FileOutputStream stream = new FileOutputStream(newFile);
             stream.write(content.getBytes(StandardCharsets.UTF_8));
             stream.close();
@@ -172,10 +176,13 @@ public final class Editor {
         }
         contents.put(fileName, stringWriter.toString());
         lines.put(fileName, splitContentIntoLines(contents.get(fileName)));
-        try (PrintWriter fileWriter = new PrintWriter(paths.get(fileName).toFile())) {
+        Path path = paths.get(fileName);
+
+        logger.info("Path is " + path + ", filename is " + fileName + ", paths contains " + paths.containsKey(fileName));
+        try (PrintWriter fileWriter = new PrintWriter(path.toFile())) {
             fileWriter.print(contents.get(fileName));
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("The path is " + path, e);
         }
     }
 
@@ -186,11 +193,13 @@ public final class Editor {
      * @param newName the new relative path of the file, starting with "src/main/java"
      */
     public void renameFile(String fileName, String newName) {
+        logger.info("Renaming file " + fileName + " new name is " + newName);
         contents.put(newName, contents.remove(fileName));
         lines.put(newName, lines.remove(fileName));
         Path path = paths.remove(fileName);
         Path newPath = Paths.get(rootDir.toString(), newName);
         path.toFile().renameTo(newPath.toFile());
+        paths.put(newName, newPath);
     }
 
     /**

@@ -92,7 +92,7 @@ public class Postprocessor extends NewPlugin {
       try {
         Customization customization = customizationClass.getConstructor().newInstance();
         logger.info("Running customization, this may take a while...");
-        fileContents = customization.run(fileContents);
+        fileContents = customization.run(fileContents, logger);
       } catch (Exception e) {
         logger.error("Unable to complete customization", e);
         return false;
@@ -155,7 +155,7 @@ public class Postprocessor extends NewPlugin {
     Editor editor;
     try {
       tempDirWithPrefix = Files.createTempDirectory("temp");
-      editor = new Editor(new HashMap<>(), tempDirWithPrefix);
+      editor = new Editor(new HashMap<>(), tempDirWithPrefix, logger);
       InputStream pomStream = Postprocessor.class.getResourceAsStream("/readme/pom.xml");
       byte[] buffer = new byte[pomStream.available()];
       pomStream.read(buffer);

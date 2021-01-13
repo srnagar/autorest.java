@@ -14,6 +14,7 @@ import com.azure.autorest.customization.implementation.ls.models.WorkspaceEditCo
 import com.azure.autorest.customization.models.Modifier;
 import com.azure.autorest.customization.models.Position;
 import com.azure.autorest.customization.models.Range;
+import org.slf4j.Logger;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -31,14 +32,16 @@ public final class ClassCustomization {
     private final Editor editor;
     private final String packageName;
     private final String className;
+    private final Logger logger;
     private SymbolInformation classSymbol;
 
-    ClassCustomization(Editor editor, EclipseLanguageClient languageClient, String packageName, String className, SymbolInformation classSymbol) {
+    ClassCustomization(Editor editor, EclipseLanguageClient languageClient, String packageName, String className, SymbolInformation classSymbol, Logger logger) {
         this.editor = editor;
         this.languageClient = languageClient;
         this.packageName = packageName;
         this.className = className;
         this.classSymbol = classSymbol;
+        this.logger = logger;
     }
 
     /**
@@ -142,6 +145,7 @@ public final class ClassCustomization {
     public ClassCustomization rename(String newName) {
         WorkspaceEdit workspaceEdit = languageClient.renameSymbol(classSymbol.getLocation().getUri(),
                 classSymbol.getLocation().getRange().getStart(), newName);
+
         List<FileEvent> changes = new ArrayList<>();
         for (Map.Entry<URI, List<TextEdit>> edit : workspaceEdit.getChanges().entrySet()) {
             int i = edit.getKey().toString().indexOf("src/main/java/");
@@ -177,7 +181,7 @@ public final class ClassCustomization {
         if (!newClassSymbol.isPresent()) {
             throw new IllegalArgumentException("Renamed failed with new class " + newName + " not found.");
         }
-        return new ClassCustomization(editor, languageClient, packageName, newName, newClassSymbol.get());
+        return new ClassCustomization(editor, languageClient, packageName, newName, newClassSymbol.get(), logger);
     }
 
     /**
@@ -319,6 +323,6 @@ public final class ClassCustomization {
     }
 
     private void refreshSymbol() {
-        this.classSymbol = new PackageCustomization(editor, languageClient, packageName).getClass(className).classSymbol;
+        this.classSymbol = new PackageCustomization(editor, languageClient, packageName, logger).getClass(className).classSymbol;
     }
 }
